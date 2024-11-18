@@ -1,0 +1,2086 @@
+<html><head><base href="." />
+<script type="module">import mojs from 'https://cdn.skypack.dev/@mojs/core';</script>
+<title>Multinexus - Conecta con tus pasiones</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        color: #2e7d32; /* Darker green for text */
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    @keyframes subtleBounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-3px);
+        }
+    }
+
+    .login-icon {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        width: 50px; /* Ensure width is set */
+        height: 50px; /* Ensure height is set */
+        background: rgba(255, 255, 255, 0.9); /* Add light background for visibility */
+        padding: 5px;
+        border-radius: 50%;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        z-index: 1500; /* Ensure it's above other elements */
+        display: none; /* Hide by default */
+    }
+
+    .login-icon.visible {
+        display: block; /* Show when has visible class */
+    }
+
+    .login-icon:hover {
+        transform: scale(1.1);
+    }
+
+    .user-menu {
+        display: none;
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: #e3f2fd; /* Light blue */
+        border-radius: 10px;
+        padding: 1rem 0;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        min-width: 200px;
+    }
+
+    .user-menu.active {
+        display: block;
+    }
+
+    .user-menu-item {
+        padding: 0.8rem 1.5rem;
+        color: #2e7d32; /* Darker green for text */
+        cursor: pointer;
+        transition: background 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .user-menu-item:hover {
+        animation: subtleBounce 0.5s ease infinite;
+        background-color: rgba(144, 202, 249, 0.2); /* Semi-transparent blue */
+    }
+
+    .user-menu-item i {
+        font-size: 1.2rem;
+        width: 20px;
+        text-align: center;
+    }
+
+    .auth-options {
+        display: none;
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: #e3f2fd; /* Light blue */
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+    }
+
+    .auth-options.active {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* Updated styles for buttons */
+    .auth-button,
+    .login-form button,
+    .connect-button,
+    .chat-option,
+    .send-button {
+        background: url('Boton azul.jpeg') no-repeat center/cover; /* Changed from 'Boton Rojo.png' */
+        border: none;
+        border-radius: 12px; /* Slightly larger radius */
+        padding: 1rem 2rem; /* Increased padding */
+        color: white;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        font-size: 1.1rem; /* Slightly larger text */
+        min-width: 150px; /* Ensure minimum width */
+    }
+
+    .send-button {
+        padding: 0.8rem;
+        min-width: auto;
+        width: 40px;
+        height: 40px;
+    }
+
+    .chat-option {
+        padding: 1.2rem 2.5rem;
+        min-width: 160px;
+    }
+
+    .connect-button {
+        padding: 1.2rem 2.5rem;
+        min-width: 180px;
+    }
+
+    .auth-button:hover,
+    .login-form button:hover,
+    .connect-button:hover,
+    .chat-option:hover,
+    .send-button:hover {
+        animation: subtleBounce 0.5s ease infinite;
+        transform: none; /* Remove any existing transform to avoid conflicts */
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background: #e3f2fd; /* Light blue */
+        padding: 2rem;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 400px;
+        position: relative;
+    }
+
+    .close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        color: #2e7d32; /* Darker green for text */
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .login-form input,
+    .language-select {
+        padding: 0.8rem;
+        border: none;
+        border-radius: 5px;
+        background: rgba(187, 222, 251, 0.3); /* Semi-transparent blue */
+        color: #2e7d32; /* Darker green for text */
+    }
+
+    .language-select {
+        padding: 0.8rem;
+        border: none;
+        border-radius: 5px;
+        background: rgba(187, 222, 251, 0.3); /* Semi-transparent blue */
+        color: #2e7d32;
+        width: 100%;
+        font-family: 'Poppins', sans-serif;
+        cursor: pointer;
+    }
+
+    .language-select option {
+        background: #e3f2fd;
+        color: #2e7d32;
+    }
+
+    .language-select:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+    }
+
+    .forgot-password {
+        text-align: right;
+        margin-top: 0.5rem;
+        font-size: 0.9em;
+        color: #558b2f;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .forgot-password:hover {
+        color: #2e7d32;
+        text-decoration: underline;
+    }
+
+    .welcome-text {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #ffffff; /* Change to white */
+        text-shadow: 2px 4px 4px rgba(0,0,0,0.4); /* Enhanced shadow for better contrast */
+        margin: 2rem 0;
+        animation: fadeInDown 1s ease-out;
+        text-align: center;
+        position: relative;
+        padding: 10px;
+        font-size: 2.5rem;
+        -webkit-text-fill-color: #ffffff; /* Ensure white color on webkit browsers */
+        background: none; /* Remove the previous gradient */
+    }
+
+    .welcome-text::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #ffffff, transparent); /* Make underline white too */
+    }
+
+    .post-fab,
+    .upload-btn,
+    .social-button {
+        background: url('Boton azul.jpeg') no-repeat center/cover; /* Changed from 'Boton Rojo.png' */
+        border: none;
+        border-radius: 50%;
+        color: white;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 1000;
+        animation: pulse 2s infinite;
+    }
+
+    .post-fab:hover,
+    .upload-btn:hover,
+    .social-button:hover {
+        animation: none;
+        transform: scale(1.1);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    }
+
+    .scene-1 {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        background-image: url('Imagen de ingenieria multimedia.jpeg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        padding: 2rem;
+    }
+
+    .scene-1::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5); /* Dark overlay for better text contrast */
+        z-index: 1;
+    }
+
+    .scene-1 > * {
+        position: relative;
+        z-index: 2;
+        color: white; /* Change text color to white for better visibility */
+    }
+
+    .scene-2 {
+        display: none;
+        width: 100%;
+        max-width: 800px;
+        padding: 2rem;
+        text-align: center;
+        position: relative; /* Added for positioning the header */
+    }
+
+    .scene-2-header {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        background: linear-gradient(135deg, #1976d2, #0d47a1);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 2px 4px 4px rgba(0,0,0,0.2);
+        position: relative;
+        padding: 10px;
+        font-size: 2.5rem;
+        margin-bottom: 1rem; /* Add space between header and video */
+    }
+
+    .scene-2-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #1976d2, transparent);
+    }
+
+    .video-container {
+        margin: 2rem 0;
+        width: 100%;
+        aspect-ratio: 16/9;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #bbdefb; /* Slightly darker blue */
+    }
+
+    .video-container video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .button-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem; /* Updated for more space between buttons */
+        margin-top: 2rem;
+        align-items: center;
+        padding: 0 1rem; /* Added padding */
+    }
+
+    .feature-button {
+        padding: 1rem;
+        background: linear-gradient(135deg, #dff2ff, #87ceeb); /* Light blue gradient */
+        border: none;
+        border-radius: 8px;
+        color: #1976d2; /* Changed to blue */
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 8px rgba(135, 206, 235, 0.3);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        max-width: 300px;
+        margin: 0.5rem auto;
+        text-transform: uppercase;
+        font-size: 1.1rem;
+    }
+
+    .feature-button:hover {
+        animation: subtleBounce 0.5s ease infinite;
+        transform: none; /* Remove any existing transform to avoid conflicts */
+        box-shadow: 0 6px 12px rgba(135, 206, 235, 0.4);
+        background: linear-gradient(135deg, #87ceeb, #5fb6e5); /* Slightly darker on hover */
+    }
+
+    .scene-3 {
+        display: none;
+        width: 100%;
+        max-width: 800px;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .back-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: none;
+        border: none;
+        color: #2e7d32; /* Darker green for text */
+        cursor: pointer;
+        font-size: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .back-button:hover {
+        transform: translateX(-5px);
+    }
+
+    .chat-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-top: 2rem;
+        align-items: center;
+    }
+
+    /* Nuevos estilos para el chat tipo WhatsApp */
+    .chat-window {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #e3f2fd; /* Light blue */
+        z-index: 1100;
+    }
+
+    .chat-header {
+        background: #64b5f6; /* Medium blue */
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        height: 60px;
+    }
+
+    .chat-header h3 {
+        margin: 0;
+        flex-grow: 1;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .chat-header h3:hover {
+        opacity: 0.8;
+    }
+
+    .conversations-list {
+        height: calc(100vh - 60px);
+        overflow-y: auto;
+        background: #e3f2fd; /* Light blue */
+    }
+
+    .conversation-item {
+        display: flex;
+        padding: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .conversation-item:hover {
+        animation: subtleBounce 0.5s ease infinite; /* Subtle bounce on hover */
+        background-color: rgba(144, 202, 249, 0.2); /* Semi-transparent blue */
+    }
+
+    .conversation-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #bbdefb; /* Slightly darker blue */
+    }
+
+    .conversation-avatar i {
+        font-size: 30px;
+        color: #90a4ae; /* Pleasant silver */
+    }
+
+    .conversation-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .conversation-name {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .conversation-preview {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .conversation-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 5px;
+    }
+
+    .conversation-time {
+        font-size: 0.8em;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .conversation-badge {
+        background: #90a4ae; /* Pleasant silver */
+        color: white;
+        border-radius: 50%;
+        min-width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8em;
+        padding: 0 6px;
+    }
+
+    .chat-messages {
+        padding: 1rem;
+        height: calc(100vh - 120px);
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .message {
+        max-width: 70%;
+        padding: 0.8rem;
+        border-radius: 10px;
+        margin: 0.5rem 0;
+    }
+
+    .message.received {
+        background: #a5d6a7; /* Light green for received messages */
+        align-self: flex-start;
+        border-bottom-left-radius: 0;
+    }
+
+    .message.sent {
+        background: #90a4ae; /* Silver for sent messages */
+        align-self: flex-end;
+        border-bottom-right-radius: 0;
+    }
+
+    .chat-input-container {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        padding: 1rem;
+        background: #e3f2fd; /* Light blue */
+        display: flex;
+        gap: 1rem;
+    }
+
+    .chat-input {
+        flex-grow: 1;
+        padding: 0.8rem;
+        border: none;
+        border-radius: 20px;
+        background: #bbdefb; /* Slightly darker blue */
+        color: #2e7d32; /* Darker green for text */
+    }
+
+    /* Add after the info-section styles */
+    .definition-window {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #e3f2fd; /* Light blue */
+        z-index: 1100;
+        padding: 2rem;
+    }
+
+    .definition-header {
+        background: #64b5f6; /* Medium blue */
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        height: 60px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        color: white;
+    }
+
+    .definition-header h3 {
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .definition-content {
+        margin-top: 80px;
+        line-height: 1.6;
+        color: #2e7d32;
+        font-size: 1.1rem;
+    }
+
+    .communities-window {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #e3f2fd; /* Light blue */
+        z-index: 1100;
+    }
+
+    .community-item {
+        display: flex;
+        padding: 20px;
+        border-bottom: 1px solid rgba(144, 164, 174, 0.2);
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .community-item:hover {
+        animation: subtleBounce 0.5s ease infinite;
+        background-color: rgba(144, 202, 249, 0.2); /* Semi-transparent blue */
+    }
+
+    .community-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        margin-right: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #bbdefb; /* Slightly darker blue */
+    }
+
+    .community-icon i {
+        font-size: 30px;
+        color: #90a4ae;
+    }
+
+    .community-info {
+        flex: 1;
+    }
+
+    .community-name {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #2e7d32;
+    }
+
+    .community-description {
+        font-size: 0.9em;
+        color: #558b2f;
+    }
+
+    .community-members {
+        font-size: 0.8em;
+        color: #558b2f;
+        margin-top: 5px;
+    }
+
+    /* New styles for info section */
+    .info-section {
+        display: none;
+        width: 100%;
+        max-width: 800px;
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .info-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        background: linear-gradient(135deg, #1976d2, #0d47a1);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 2px 4px 4px rgba(0,0,0,0.2);
+        position: relative;
+        padding: 10px;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .info-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #1976d2, transparent);
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);  /* 2x2 grid */
+        gap: 1.5rem;
+        margin: 0 auto;
+        max-width: 500px;  /* Reduced to make grid more compact */
+        padding: 1rem;
+    }
+
+    .info-button {
+        background: linear-gradient(135deg, #bbdefb, #81c784); /* Light to medium green gradient */
+        border: none;
+        border-radius: 8px;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        font-weight: bold; /* Make text bold */
+        letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        max-width: 300px;
+        margin: 0.5rem auto;
+        text-transform: uppercase;
+        font-size: 1.1rem;
+        color: #1976d2; /* Blue text color */
+    }
+
+    .info-button:hover {
+        animation: subtleBounce 0.5s ease infinite;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        background: linear-gradient(135deg, #81c784, #4caf50); /* Slightly darker green on hover */
+    }
+
+    /* Add this after the definition-window styles */
+    .roles-window {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #e3f2fd; /* Light blue */
+        z-index: 1100;
+        padding: 2rem;
+    }
+
+    .roles-header {
+        background: #64b5f6; /* Medium blue */
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        height: 60px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        color: white;
+    }
+
+    .roles-header h3 {
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .roles-content {
+        margin-top: 80px;
+        line-height: 1.6;
+        color: #2e7d32;
+        font-size: 1.1rem;
+    }
+
+    /* New styles for knowledge window */
+    .knowledge-window {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #e3f2fd; /* Light blue */
+        z-index: 1100;
+        padding: 2rem;
+    }
+
+    .knowledge-header {
+        background: #64b5f6; /* Medium blue */
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        height: 60px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        color: white;
+    }
+
+    .knowledge-header h3 {
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .knowledge-content {
+        margin-top: 80px;
+        line-height: 1.6;
+        color: #2e7d32;
+        font-size: 1.1rem;
+    }
+
+    /* Add this after the knowledge window styles */
+    .aportes-window {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #e3f2fd; /* Light blue */
+        z-index: 1100;
+        padding: 2rem;
+    }
+
+    .aportes-header {
+        background: #64b5f6; /* Medium blue */
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        height: 60px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        color: white;
+    }
+
+    .aportes-header h3 {
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .aportes-content {
+        margin-top: 80px;
+        line-height: 1.6;
+        color: #2e7d32;
+        font-size: 1.1rem;
+    }
+
+    /* Add these new styles */
+    .social-button {
+        background: url('Boton azul.jpeg') no-repeat center/cover; /* Changed from 'Boton Rojo.png' */
+        border: none;
+        border-radius: 50%;
+        color: white;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 1000;
+        animation: pulse 2s infinite;
+    }
+
+    .social-button:hover {
+        animation: none;
+        transform: scale(1.1);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    }
+
+    .social-network {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #e3f2fd; /* Light blue */
+        z-index: 1200;
+        overflow-y: auto;
+    }
+
+    .social-header {
+        background: #64b5f6; /* Medium blue */
+        padding: 1rem;
+        position: sticky;
+        top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: white;
+        z-index: 1201;
+    }
+
+    .post {
+        background: white;
+        margin: 1rem;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .post-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 1rem;
+    }
+
+    .post-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #c8e6c9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .post-content {
+        margin-bottom: 1rem;
+    }
+
+    .post-actions {
+        display: flex;
+        gap: 1rem;
+        color: #90a4ae;
+    }
+
+    .post-action {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .post-action:hover {
+        animation: subtleBounce 0.5s ease infinite;
+    }
+
+    /* New styles for YouTube-style interface */
+    .youtube-style {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #e3f2fd; /* Light blue */
+        z-index: 1100;
+        overflow-y: auto;
+    }
+
+    .video-header {
+        background: #64b5f6; /* Medium blue */
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+        z-index: 1201;
+    }
+
+    .video-card {
+        background: white;
+        margin: 1rem;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        display: flex;
+        gap: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .video-card:hover {
+        animation: subtleBounce 0.5s ease infinite;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+
+    .video-thumbnail {
+        width: 200px;
+        height: 120px;
+        background: #bbdefb; /* Slightly darker blue */
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .video-info {
+        flex: 1;
+    }
+
+    .video-title {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #2e7d32;
+    }
+
+    .video-creator {
+        font-size: 0.9em;
+        color: #558b2f;
+        margin-bottom: 0.5rem;
+    }
+
+    .video-stats {
+        font-size: 0.8em;
+        color: #558b2f;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* Enhance all headings */
+    h1, h2, h3 {
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        animation: fadeInDown 0.6s ease-out;
+    }
+
+    /* Add these new styles */
+    .profile-photo-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .profile-photo {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: #bbdefb; /* Slightly darker blue */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .profile-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-photo i {
+        font-size: 3rem;
+        color: #90a4ae;
+    }
+
+    .profile-photo input[type="file"] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .photo-upload-label {
+        margin-top: 0.5rem;
+        color: #2e7d32;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    .photo-upload-label:hover {
+        text-decoration: underline;
+    }
+
+    .profile-form textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: none;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #2e7d32;
+        resize: vertical;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    /* Add this to the CSS section */
+    .post-fab {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        background: url('Boton azul.jpeg') no-repeat center/cover; /* Changed from 'Boton Rojo.png' */
+        border: none;
+        border-radius: 50%;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        cursor: pointer;
+        z-index: 1600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .post-fab:hover {
+        animation: subtleBounce 0.5s ease infinite;
+        transform: scale(1.1);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    }
+
+    /* Add these styles inside the existing <style> tag */
+    .upload-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        background: url('Boton azul.jpeg') no-repeat center/cover; /* Changed from 'Boton Rojo.png' */
+        border: none;
+        border-radius: 50%;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        cursor: pointer;
+        z-index: 1600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .upload-btn:hover {
+        animation: subtleBounce 0.5s ease infinite;
+        transform: scale(1.1);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    }
+
+    /* Update the scene-3 header styling */
+    .scene-3 h2 {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #ffffff;
+        text-shadow: 2px 4px 4px rgba(0,0,0,0.4);
+        margin: 2rem 0;
+        animation: fadeInDown 1s ease-out;
+        text-align: center;
+        position: relative;
+        padding: 10px;
+        font-size: 2.5rem;
+        -webkit-text-fill-color: #ffffff;
+        background: none;
+    }
+
+    .scene-3 h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #ffffff, transparent);
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <img src="Iniciar Sesion o Registrate.png" alt="Ícono de inicio de sesión que muestra un globo, una carpeta y un archivo" class="login-icon" onclick="handleLoginIconClick()" width="50" height="50">
+
+    <div class="auth-options">
+        <button class="auth-button" onclick="showLoginModal()">Iniciar Sesión</button>
+        <button class="auth-button" onclick="showRegisterModal()">Regístrate</button>
+    </div>
+
+    <div class="user-menu">
+        <div class="user-menu-item">
+            <i class="fas fa-user"></i>
+            Perfil
+        </div>
+        <div class="user-menu-item">
+            <i class="fas fa-language"></i>
+            Lenguaje
+        </div>
+        <div class="user-menu-item">
+            <i class="fas fa-headset"></i>
+            Soporte
+        </div>
+        <div class="user-menu-item" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            Cerrar Sesión
+        </div>
+    </div>
+
+    <div class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="toggleLoginModal()">&times;</button>
+            <form class="login-form">
+                <h2>Iniciar Sesión</h2>
+                <input type="email" placeholder="Correo electrónico" required>
+                <input type="password" placeholder="Contraseña" required>
+                <div class="forgot-password" onclick="handleForgotPassword()">
+                    ¿Olvidaste tu contraseña?
+                </div>
+                <button type="submit">Iniciar Sesión</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal register-modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="document.querySelector('.register-modal').classList.remove('active')">&times;</button>
+            <form class="login-form">
+                <h2>Regístrate</h2>
+                <input type="text" placeholder="Nombre completo" required>
+                <input type="tel" placeholder="Teléfono" required>
+                <input type="email" placeholder="Correo electrónico" required>
+                <select class="language-select" required>
+                    <option value="">Selecciona tu idioma</option>
+                    <option value="es">Español</option>
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                    <option value="pt">Português</option>
+                </select>
+                <input type="password" placeholder="Contraseña" required>
+                <input type="password" placeholder="Confirmar contraseña" required>
+                <button type="submit">Regístrate</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal profile-edit-modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="document.querySelector('.profile-edit-modal').classList.remove('active')">&times;</button>
+            <form class="profile-form">
+                <h2>Editar Perfil</h2>
+                <div class="profile-photo-container">
+                    <div class="profile-photo">
+                        <i class="fas fa-user-circle"></i>
+                        <input type="file" id="profile-photo-input" accept="image/*" onchange="handleProfilePhotoChange(event)">
+                    </div>
+                    <label for="profile-photo-input" class="photo-upload-label">Cambiar foto</label>
+                </div>
+                <input type="text" placeholder="Nombre completo" required>
+                <input type="tel" placeholder="Teléfono" required>
+                <input type="email" placeholder="Correo electrónico" required>
+                <select class="language-select" required>
+                    <option value="">Selecciona tu idioma</option>
+                    <option value="es">Español</option>
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                    <option value="pt">Português</option>
+                </select>
+                <textarea placeholder="Biografía" rows="3"></textarea>
+                <button type="submit">Guardar cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="scene-1">
+        <h1 class="welcome-text">Bienvenido a Multinexus</h1>
+        <p>La red que te conecta con tus pasiones</p>
+        <button class="connect-button" onclick="showScene2()">Conéctate</button>
+    </div>
+
+    <div class="scene-2">
+        <h3 class="scene-2-header" onclick="returnToScene1()">Multinexus</h3>
+        <div class="video-container">
+            <video width="100%" height="100%" controls>
+                <source src="Multinexus.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <div class="button-container">
+            <button class="feature-button">Chat</button>
+            <button class="feature-button">Informate</button>
+            <button class="feature-button">Consejos prácticos</button>
+        </div>
+    </div>
+
+    <div class="scene-3">
+        <button class="back-button" onclick="goBackToScene2()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2>Chat</h2>
+        <div class="chat-buttons">
+            <button class="chat-option">Amigos</button>
+            <button class="chat-option">Comunidad</button>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <button class="back-button" onclick="goBackToScene2()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2 class="info-title">Ingeniería Multimedia</h2>
+        <div class="info-grid">
+            <button class="info-button">Definición</button>
+            <button class="info-button">Roles</button>
+            <button class="info-button">Conocimientos</button>
+            <button class="info-button">Aportes</button>
+        </div>
+        <button class="social-button" onclick="showSocialNetwork()">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+
+    <div class="definition-window">
+        <div class="definition-header">
+            <h3 onclick="closeDefinition()">Multinexus</h3>
+        </div>
+        <div class="definition-content">
+            Un ingeniero multimedia es un profesional que combina conocimientos de tecnología, diseño y comunicación para crear contenidos y aplicaciones interactivas. Utilizan habilidades en programación, edición de video y audio, diseño gráfico y desarrollo web para producir proyectos multimedia innovadores. Estos ingenieros trabajan en diversos campos como entretenimiento, educación, marketing, y tecnología, integrando múltiples formatos como texto, imágenes, audio y video para crear experiencias digitales atractivas y funcionales.
+        </div>
+    </div>
+
+    <div class="roles-window">
+        <div class="roles-header">
+            <h3 onclick="closeRoles()">Multinexus</h3>
+        </div>
+        <div class="roles-content">
+            Un ingeniero multimedia puede desempeñar varios roles diferentes según el proyecto y el equipo. Aquí tienes algunos ejemplos:
+            <br><br>
+            Diseñador Multimedia: Crea gráficos, animaciones, y otros contenidos visuales.
+            <br><br>
+            Desarrollador de Aplicaciones: Programa aplicaciones interactivas, videojuegos, y otras plataformas multimedia.
+            <br><br>
+            Editor de Video y Audio: Se encarga de la edición y postproducción de contenidos audiovisuales.
+            <br><br>
+            Especialista en UI/UX: Diseña interfaces de usuario y mejora la experiencia del usuario en aplicaciones y sitios web.
+            <br><br>
+            Productor de Contenidos: Coordina la producción de proyectos multimedia, gestionando recursos y equipos.
+            <br><br>
+            Consultor de Tecnología: Asesora sobre la implementación de tecnologías multimedia en diferentes proyectos.
+        </div>
+    </div>
+
+    <div class="knowledge-window">
+        <div class="knowledge-header">
+            <h3 onclick="closeKnowledge()">Multinexus</h3>
+        </div>
+        <div class="knowledge-content">
+            Los fundamentos de la ingeniería multimedia son los principios y conocimientos básicos necesarios para desempeñarse en esta disciplina. Incluyen:
+            <br><br>
+            Integración de Medios: Saber combinar elementos como video, audio, texto e imágenes para crear contenido interactivo.
+            <br><br>
+            Diseño y Desarrollo: Conocimiento en herramientas de diseño gráfico y de software para desarrollar aplicaciones, videojuegos, y experiencias digitales.
+            <br><br>
+            Tecnología: Dominio de tecnologías y plataformas multimedia, desde software de edición hasta lenguajes de programación.
+            <br><br>
+            Comunicación Visual: Habilidades para transmitir mensajes de manera efectiva a través de medios visuales.
+            <br><br>
+            Interactividad: Creación de interfaces y experiencias de usuario que permiten la interacción entre el usuario y el contenido.
+            <br><br>
+            Gestión de Proyectos: Capacidad para planificar, ejecutar y supervisar proyectos multimedia de principio a fin.
+        </div>
+    </div>
+
+    <div class="aportes-window">
+        <div class="aportes-header">
+            <h3 onclick="closeAportes()">Multinexus</h3>
+        </div>
+        <div class="aportes-content">
+            Los ingenieros multimedia en Colombia han realizado importantes aportes en varios sectores. Aquí algunos ejemplos:
+            <br><br>
+            Educación: Han desarrollado plataformas educativas interactivas y aplicaciones que facilitan el aprendizaje a distancia.
+            <br><br>
+            Salud: Han contribuido a la telemedicina, permitiendo consultas médicas y diagnósticos a distancia mediante el uso de tecnologías multimedia.
+            <br><br>
+            Entretenimiento: Han trabajado en la creación de videojuegos, animaciones y efectos visuales para películas y programas de televisión.
+            <br><br>
+            Marketing y Publicidad: Han diseñado campañas publicitarias innovadoras utilizando multimedia para captar la atención del público.
+            <br><br>
+            Turismo: Han creado recorridos virtuales y aplicaciones que mejoran la experiencia del turista.
+        </div>
+    </div>
+
+    <div class="chat-window">
+        <div class="chat-header">
+            <h3 onclick="closeFriendsChat()">Multinexus</h3>
+        </div>
+        
+        <div class="conversations-list">
+            <div class="conversation-item" onclick="openChat(this)">
+                <div class="conversation-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="conversation-info">
+                    <div class="conversation-name">Juan Pérez</div>
+                    <div class="conversation-preview">¡Hola! ¿Cómo estás?</div>
+                </div>
+                <div class="conversation-meta">
+                    <div class="conversation-time">10:30</div>
+                    <div class="conversation-badge">2</div>
+                </div>
+            </div>
+            
+            <div class="conversation-item" onclick="openChat(this)">
+                <div class="conversation-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="conversation-info">
+                    <div class="conversation-name">María García</div>
+                    <div class="conversation-preview">¿Nos vemos mañana?</div>
+                </div>
+                <div class="conversation-meta">
+                    <div class="conversation-time">09:15</div>
+                </div>
+            </div>
+            
+            <div class="conversation-item" onclick="openChat(this)">
+                <div class="conversation-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="conversation-info">
+                    <div class="conversation-name">Carlos Rodriguez</div>
+                    <div class="conversation-preview">¡Gracias por la ayuda!</div>
+                </div>
+                <div class="conversation-meta">
+                    <div class="conversation-time">Ayer</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-messages" style="display: none;">
+            <div class="message received">
+                ¡Hola! Bienvenido a Multinexus Chat
+            </div>
+            <div class="message sent">
+                ¡Gracias! Me alegro de estar aquí
+            </div>
+        </div>
+        <div class="chat-input-container" style="display: none;">
+            <input type="text" class="chat-input" placeholder="Escribe un mensaje...">
+            <button class="send-button">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="communities-window">
+        <div class="chat-header">
+            <h3 onclick="closeCommunitiesWindow()">Multinexus</h3>
+        </div>
+        
+        <div class="conversations-list">
+            <div class="community-item">
+                <div class="community-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="community-info">
+                    <div class="community-name">Desarrollo Web Multimedia</div>
+                    <div class="community-description">Grupo para compartir experiencias y conocimientos sobre desarrollo web multimedia</div>
+                    <div class="community-members">126 miembros</div>
+                </div>
+            </div>
+
+            <div class="community-item">
+                <div class="community-icon">
+                    <i class="fas fa-video"></i>
+                </div>
+                <div class="community-info">
+                    <div class="community-name">Animación Digital</div>
+                    <div class="community-description">Discusiones sobre técnicas de animación y herramientas</div>
+                    <div class="community-members">98 miembros</div>
+                </div>
+            </div>
+
+            <div class="community-item">
+                <div class="community-icon">
+                    <i class="fas fa-vr-cardboard"></i>
+                </div>
+                <div class="community-info">
+                    <div class="community-name">Realidad Virtual y Aumentada</div>
+                    <div class="community-description">Explora las últimas tendencias en VR/AR</div>
+                    <div class="community-members">84 miembros</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="social-network">
+        <div class="social-header">
+            <h3 onclick="closeSocialNetwork()">MultinexusNet</h3>
+            <div style="display: flex; gap: 10px;">
+                <i class="fas fa-plus" onclick="showSocialUpload()" style="cursor: pointer;"></i>
+                <i class="fas fa-times" onclick="closeSocialNetwork()" style="cursor: pointer;"></i>
+            </div>
+        </div>
+        
+        <div class="post">
+            <div class="post-header">
+                <div class="post-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <strong>Ana Martínez</strong>
+                    <div style="font-size: 0.8em; color: #666;">Ingeniera Multimedia</div>
+                </div>
+            </div>
+            <div class="post-content">
+                ¡Emocionada de compartir mi último proyecto de realidad aumentada para el museo local! #IngenieríaMultimedia #AR
+            </div>
+            <div class="post-actions">
+                <div class="post-action">
+                    <i class="far fa-heart"></i>
+                    <span>24</span>
+                </div>
+                <div class="post-action">
+                    <i class="far fa-comment"></i>
+                    <span>8</span>
+                </div>
+                <div class="post-action">
+                    <i class="far fa-share-square"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="post">
+            <div class="post-header">
+                <div class="post-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <strong>Carlos Ruiz</strong>
+                    <div style="font-size: 0.8em; color: #666;">Estudiante IM</div>
+                </div>
+            </div>
+            <div class="post-content">
+                Buscando compañeros para proyecto de desarrollo de videojuegos. ¿Alguien interesado? 🎮 #GameDev #Multimedia
+            </div>
+            <div class="post-actions">
+                <div class="post-action">
+                    <i class="far fa-heart"></i>
+                    <span>15</span>
+                </div>
+                <div class="post-action">
+                    <i class="far fa-comment"></i>
+                    <span>12</span>
+                </div>
+                <div class="post-action">
+                    <i class="far fa-share-square"></i>
+                </div>
+            </div>
+        </div>
+
+        <button class="post-fab">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+
+    <div class="youtube-style">
+        <div class="video-header">
+            <h3 onclick="closeYoutubeStyle()">Multinexus</h3>
+            <i class="fas fa-times" onclick="closeYoutubeStyle()" style="cursor: pointer;"></i>
+        </div>
+
+        <div class="video-card">
+            <div class="video-thumbnail">
+                <i class="fas fa-play fa-2x"></i>
+            </div>
+            <div class="video-info">
+                <div class="video-title">Tips para Desarrollo Web Multimedia</div>
+                <div class="video-creator">por Juan Pérez • Ing. Multimedia</div>
+                <div class="video-stats">1.2K vistas • hace 2 días</div>
+            </div>
+        </div>
+
+        <div class="video-card">
+            <div class="video-thumbnail">
+                <i class="fas fa-play fa-2x"></i>
+            </div>
+            <div class="video-info">
+                <div class="video-title">Mejores Prácticas en Animación 3D</div>
+                <div class="video-creator">por Ana Martínez • Animadora Digital</div>
+                <div class="video-stats">3.4K vistas • hace 1 semana</div>
+            </div>
+        </div>
+
+        <div class="video-card">
+            <div class="video-thumbnail">
+                <i class="fas fa-play fa-2x"></i>
+            </div>
+            <div class="video-info">
+                <div class="video-title">Guía de Diseño UI/UX para Multimedia</div>
+                <div class="video-creator">por Carlos Rodríguez • UX Designer</div>
+                <div class="video-stats">2.8K vistas • hace 3 días</div>
+            </div>
+        </div>
+
+        <button class="upload-btn">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+
+    <script>
+        let isLoggedIn = false;
+
+        function playWelcomeMusic() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create oscillators for a simple pop melody
+            const melody = [
+                { note: 440, duration: 0.2 }, // A4
+                { note: 493.88, duration: 0.2 }, // B4
+                { note: 523.25, duration: 0.2 }, // C5
+                { note: 587.33, duration: 0.4 }, // D5
+                { note: 523.25, duration: 0.2 }, // C5
+                { note: 493.88, duration: 0.2 }, // B4
+                { note: 440, duration: 0.4 }  // A4
+            ];
+
+            let startTime = audioContext.currentTime;
+
+            melody.forEach(({ note, duration }) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.value = note;
+                
+                gainNode.gain.setValueAtTime(0, startTime);
+                gainNode.gain.linearRampToValueAtTime(0.2, startTime + 0.01);
+                gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+                
+                oscillator.start(startTime);
+                oscillator.stop(startTime + duration);
+                
+                startTime += duration;
+            });
+        }
+
+        function handleLoginIconClick() {
+            if (isLoggedIn) {
+                toggleUserMenu();
+            } else {
+                const authOptions = document.querySelector('.auth-options');
+                authOptions.classList.toggle('active');
+            }
+        }
+
+        function toggleUserMenu() {
+            const userMenu = document.querySelector('.user-menu');
+            userMenu.classList.toggle('active');
+        }
+
+        function toggleLoginModal() {
+            const modal = document.querySelector('.modal');
+            modal.classList.toggle('active');
+        }
+
+        function showLoginModal() {
+            document.querySelector('.auth-options').classList.remove('active');
+            document.querySelector('.modal').classList.add('active');
+        }
+
+        function showRegisterModal() {
+            document.querySelector('.auth-options').classList.remove('active');
+            document.querySelector('.register-modal').classList.add('active');
+        }
+
+        function showScene2() {
+            document.querySelector('.scene-1').style.display = 'none';
+            document.querySelector('.scene-2').style.display = 'block';
+            document.querySelector('.scene-3').style.display = 'none';
+            document.querySelector('.info-section').style.display = 'none';
+            updateLoginIconVisibility();
+        }
+
+        function returnToScene1() {
+            document.querySelector('.scene-2').style.display = 'none';
+            document.querySelector('.scene-1').style.display = 'block';
+            updateLoginIconVisibility();
+        }
+
+        function goBackToScene2() {
+            document.querySelector('.scene-2').style.display = 'block';
+            document.querySelector('.scene-3').style.display = 'none';
+            document.querySelector('.info-section').style.display = 'none';
+            updateLoginIconVisibility();
+        }
+
+        function showChatScene() {
+            document.querySelector('.scene-1').style.display = 'none';
+            document.querySelector('.scene-2').style.display = 'none';
+            document.querySelector('.scene-3').style.display = 'block';
+            document.querySelector('.info-section').style.display = 'none';
+            updateLoginIconVisibility();
+        }
+
+        function showInfoSection() {
+            document.querySelector('.scene-2').style.display = 'none';
+            document.querySelector('.info-section').style.display = 'block';
+            updateLoginIconVisibility();
+        }
+
+        function updateLoginIconVisibility() {
+            const loginIcon = document.querySelector('.login-icon');
+            const scene1 = document.querySelector('.scene-1');
+            const scene2 = document.querySelector('.scene-2');
+            const youtubeStyle = document.querySelector('.youtube-style');
+            
+            // Show icon only if scene 1 or 2 is displayed AND youtube style is not displayed
+            if ((scene1.style.display !== 'none' || scene2.style.display !== 'none') && 
+                (youtubeStyle.style.display === 'none' || youtubeStyle.style.display === '')) {
+                loginIcon.classList.add('visible');
+            } else {
+                loginIcon.classList.remove('visible');
+            }
+        }
+
+        // Initialize icon visibility on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            playWelcomeMusic(); // Play welcome music when the page loads
+
+            // Only add event listeners if elements exist
+            const chatButton = document.querySelector('.feature-button:first-child');
+            if (chatButton) {
+                chatButton.addEventListener('click', showChatScene);
+            }
+
+            const infoButton = document.querySelector('.feature-button:nth-child(2)');
+            if (infoButton) {
+                infoButton.addEventListener('click', showInfoSection);
+            }
+
+            const conocimientosButton = document.querySelector('.info-button:nth-child(3)');
+            if (conocimientosButton) {
+                conocimientosButton.addEventListener('click', function() {
+                    document.querySelector('.knowledge-window').style.display = 'block';
+                    document.querySelector('.info-section').style.display = 'none';
+                });
+            }
+
+            // Add click handler for aportes button
+            const aportesButton = document.querySelector('.info-button:last-child');
+            if (aportesButton) {
+                aportesButton.addEventListener('click', function() {
+                    document.querySelector('.aportes-window').style.display = 'block';
+                    document.querySelector('.info-section').style.display = 'none';
+                });
+            }
+            
+            // Add click handler for consejos prácticos button
+            const consejosButton = document.querySelector('.feature-button:nth-child(3)');
+            if (consejosButton) {
+                consejosButton.addEventListener('click', showYoutubeStyle);
+            }
+
+            // Add chat option event listeners
+            const chatOptionFriends = document.querySelector('.chat-option:first-child');
+            if (chatOptionFriends) {
+                chatOptionFriends.addEventListener('click', function() {
+                    document.querySelector('.chat-window').style.display = 'block';
+                });
+            }
+
+            const chatOptionCommunity = document.querySelector('.chat-option:nth-child(2)');
+            if (chatOptionCommunity) {
+                chatOptionCommunity.addEventListener('click', function() {
+                    document.querySelector('.communities-window').style.display = 'block';
+                });
+            }
+
+            // Add info button event listeners
+            const definitionButton = document.querySelector('.info-button:first-child');
+            if (definitionButton) {
+                definitionButton.addEventListener('click', function() {
+                    document.querySelector('.definition-window').style.display = 'block';
+                    document.querySelector('.info-section').style.display = 'none';
+                });
+            }
+
+            const rolesButton = document.querySelector('.info-button:nth-child(2)');
+            if (rolesButton) {
+                rolesButton.addEventListener('click', function() {
+                    document.querySelector('.roles-window').style.display = 'block';
+                    document.querySelector('.info-section').style.display = 'none';
+                });
+            }
+
+            // Add profile menu event listener
+            const profileMenuItem = document.querySelector('.user-menu-item:first-child');
+            if (profileMenuItem) {
+                profileMenuItem.addEventListener('click', showEditProfile);
+            }
+
+            // Add post action event listeners
+            const postActions = document.querySelectorAll('.post-action');
+            if (postActions.length > 0) {
+                postActions.forEach(action => {
+                    action.addEventListener('click', function() {
+                        const icon = this.querySelector('i');
+                        const count = this.querySelector('span');
+                        
+                        if (icon.classList.contains('far')) {
+                            icon.classList.remove('far');
+                            icon.classList.add('fas');
+                            if (count) {
+                                count.textContent = parseInt(count.textContent) + 1;
+                            }
+                        } else {
+                            icon.classList.remove('fas');
+                            icon.classList.add('far');
+                            if (count) {
+                                count.textContent = parseInt(count.textContent) - 1;
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Add send button event listener
+            const sendButton = document.querySelector('.send-button');
+            if (sendButton) {
+                sendButton.addEventListener('click', sendMessage);
+            }
+
+            const chatInput = document.querySelector('.chat-input');
+            if (chatInput) {
+                chatInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        sendMessage();
+                    }
+                });
+            }
+
+            // Add post-fab click event
+            const postFab = document.querySelector('.post-fab');
+            if (postFab) {
+                postFab.addEventListener('click', function() {
+                    alert('¡Aquí podrás crear nuevo contenido!');
+                });
+            }
+
+            // Add YouTube upload button handler
+            const uploadBtn = document.querySelector('.youtube-style .upload-btn');
+            if (uploadBtn) {
+                uploadBtn.addEventListener('click', showYoutubeUploadOptions);
+            }
+
+            // Initialize icon visibility
+            updateLoginIconVisibility();
+        });
+
+        function showYoutubeUploadOptions() {
+            alert('Opciones para cargar:\n- Video\n- Miniatura\n- Título\n- Descripción');
+        }
+
+        function showInfoSection() {
+            document.querySelector('.scene-2').style.display = 'none';
+            document.querySelector('.info-section').style.display = 'block';
+            updateLoginIconVisibility();
+        }
+
+        document.querySelector('.chat-option:first-child').addEventListener('click', function() {
+            document.querySelector('.chat-window').style.display = 'block';
+        });
+
+        document.querySelector('.chat-option:nth-child(2)').addEventListener('click', function() {
+            document.querySelector('.communities-window').style.display = 'block';
+        });
+
+        function closeFriendsChat() {
+            document.querySelector('.chat-window').style.display = 'none';
+            document.querySelector('.scene-3').style.display = 'block';
+            // Reset chat view state
+            document.querySelector('.conversations-list').style.display = 'block';
+            document.querySelector('.chat-messages').style.display = 'none';
+            document.querySelector('.chat-input-container').style.display = 'none';
+        }
+
+        function closeCommunitiesWindow() {
+            document.querySelector('.communities-window').style.display = 'none';
+            document.querySelector('.scene-3').style.display = 'block';
+        }
+
+        document.querySelector('.send-button').addEventListener('click', sendMessage);
+        document.querySelector('.chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const input = document.querySelector('.chat-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                const messagesContainer = document.querySelector('.chat-messages');
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message sent';
+                messageElement.textContent = message;
+                messagesContainer.appendChild(messageElement);
+                
+                input.value = '';
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+
+        function openChat(conversationElement) {
+            const name = conversationElement.querySelector('.conversation-name').textContent;
+            document.querySelector('.conversations-list').style.display = 'none';
+            document.querySelector('.chat-messages').style.display = 'flex';
+            document.querySelector('.chat-input-container').style.display = 'flex';
+            console.log(`Opening chat with ${name}`);
+        }
+
+        document.querySelector('.info-button:first-child').addEventListener('click', function() {
+            document.querySelector('.definition-window').style.display = 'block';
+            document.querySelector('.info-section').style.display = 'none';
+        });
+
+        document.querySelector('.info-button:nth-child(2)').addEventListener('click', function() {
+            document.querySelector('.roles-window').style.display = 'block';
+            document.querySelector('.info-section').style.display = 'none';
+        });
+
+        function closeRoles() {
+            document.querySelector('.roles-window').style.display = 'none';
+            document.querySelector('.info-section').style.display = 'block';
+        }
+
+        function closeDefinition() {
+            document.querySelector('.definition-window').style.display = 'none';
+            document.querySelector('.info-section').style.display = 'block';
+        }
+
+        function closeKnowledge() {
+            document.querySelector('.knowledge-window').style.display = 'none';
+            document.querySelector('.info-section').style.display = 'block';
+        }
+
+        function closeAportes() {
+            document.querySelector('.aportes-window').style.display = 'none';
+            document.querySelector('.info-section').style.display = 'block';
+        }
+        
+        // Removed all upload related functions
+        function showUploadModal() {
+            // Empty function - no longer needed
+        }
+
+        function closeUploadModal() {
+            // Empty function - no longer needed 
+        }
+
+        // Removed unnecessary upload button event listeners
+        document.querySelectorAll('.upload-button').forEach(button => {
+            button.removeEventListener('click', showUploadModal);
+        });
+
+        // Add click handlers for the post actions
+        document.querySelectorAll('.post-action').forEach(action => {
+            action.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                const count = this.querySelector('span');
+                
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    if (count) {
+                        count.textContent = parseInt(count.textContent) + 1;
+                    }
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    if (count) {
+                        count.textContent = parseInt(count.textContent) - 1;
+                    }
+                }
+            });
+        });
+
+        function showYoutubeStyle() {
+            document.querySelector('.youtube-style').style.display = 'block';
+            document.querySelector('.scene-2').style.display = 'none';
+            updateLoginIconVisibility(); // Add this line
+        }
+
+        function closeYoutubeStyle() {
+            document.querySelector('.youtube-style').style.display = 'none'; 
+            document.querySelector('.scene-2').style.display = 'block';
+            updateLoginIconVisibility(); // Add this line
+        }
+
+        function handleProfilePhotoChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const profilePhoto = document.querySelector('.profile-photo');
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    profilePhoto.innerHTML = '';
+                    profilePhoto.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function showEditProfile() {
+            document.querySelector('.user-menu').classList.remove('active');
+            document.querySelector('.profile-edit-modal').classList.add('active');
+        }
+
+        // Add these functions inside the <script> tag
+        function showSocialNetwork() {
+            document.querySelector('.social-network').style.display = 'block';
+            document.querySelector('.info-section').style.display = 'none';
+        }
+
+        function closeSocialNetwork() {
+            document.querySelector('.social-network').style.display = 'none';
+            document.querySelector('.info-section').style.display = 'block';
+        }
+
+        function showSocialUpload() {
+            console.log('Upload functionality has been disabled');
+        }
+
+        function closeSocialUpload() {
+            // The social upload modal is removed
+        }
+    </script>
+</body></html>
